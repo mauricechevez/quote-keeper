@@ -193,7 +193,8 @@ const UICtrl = (function(){
     backBtn: '#back-btn',
     clearBtn:'#clear-btn',
     editStateBtns: '.edit-state-btns',
-    fieldWrapper: '.field-wrapper'
+    fieldWrapper: '.field-wrapper',
+    sortField: '#sort-field'
   }
 
   // 👨‍💻 PUBLIC Functions 👨‍💻
@@ -229,7 +230,6 @@ const UICtrl = (function(){
       console.log(quotesDesc)
       console.log(`=-=-=-=-=-=-=-=-=-=-=-=-`)
       quotesDesc.sort(compareDates)
-      // console.log(quotesDesc)
       
       function compareDates(a, b) {
       if (b.createdDate < a.createdDate) {
@@ -371,6 +371,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
   document.querySelector(uiSelectors.backBtn).addEventListener('click',backBtnClick)
   document.querySelector(uiSelectors.deleteBtn).addEventListener('click',quoteDeleteSubmit)
   document.querySelector(uiSelectors.clearBtn).addEventListener('click',clearAllQuotes)
+  document.querySelector(uiSelectors.sortField).addEventListener('change',sortQuoteList)
   /* ⌨️ PREVENT Enter Key from being used to submit the form ⌨️ */
     document.addEventListener('keypress', function(e){
       const submitStateValue = DataCtrl.getSubmitStatevalue()
@@ -584,6 +585,25 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     }
     e.preventDefault();
   }
+  /* 👇  Sort Quote List 👇 */
+  const sortQuoteList = function(e){
+    const allQuotes = StorageCtrl.getStorageItems();
+    // Map the quotes
+    const tempQuotesArray = allQuotes.map(q =>({
+      name: q.text, createdDate:new Date(q.createdDate).toLocaleString()
+    }))
+    tempQuotesArray.sort(compareDates)
+    function compareDates(a, b) {
+      if (b.createdDate < a.createdDate) {
+        return -1;
+      }
+      if (b.createdDate > a.createdDate) {
+        return 1;
+      }
+      return 0;
+    }
+    console.log(tempQuotesArray) ;
+  }
 
   // 👨‍💻 PUBLIC Methods 👨‍💻
   return{
@@ -593,7 +613,6 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
 
       const allStoredQuotes = StorageCtrl.getStorageItems();
       if(allStoredQuotes.length === 0){
-          console.log('AllStoredQuotes IS equal to 0')
         // Disable the Clear button
         UICtrl.toggleClearBtnState("true");
         UICtrl.hideList();
