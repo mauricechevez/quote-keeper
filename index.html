@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Quote Keeper 📒</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+  integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="twelve columns header-section">
+        <h1>Quote Keeper</h1>
+        <button id="clear-btn">Clear all</button>
+      </div>
+    </div>
+    <form id="form">
+      <div class="row">
+        <div class="twelve columns">
+          <div class="field-wrapper">
+            <label for="quote">Enter your quote below</label>
+          <input type="text" name="quote" id="quote" class="u-full-width input-field" placeholder="Be yourself; everyone else is already taken">
+          </div>
+          <div class="field-wrapper">
+            <label for="author">Author's name</label>
+          <input type="text" name="author" id="author" class="u-full-width input-field" placeholder="Oscar Wilde">
+          </div>
+          <!-- Submit button -->
+          <input type="submit" value="Submit Quote" id="add-quote-btn" class="button-primary u-full-width">
+          
+        </div>
+      </div>
+      <div class="row u-justify-center edit-state-btns">
+        <div class="four columns other-btns">
+          <input type="button" value="Edit Quote" id="edit-btn" class="btn">
+        </div>
+        <div class="four columns other-btns">
+          <input type="button" value="Delete Quote" id="delete-btn" class="btn">
+        </div>
+        <div class="four columns other-btns">
+          <input type="button" value="Back" id="back-btn" class="btn">
+        </div>
+      </div>
+    </form>
+            <!-- All Quotes Below -->
+    <div id="quote-info-container">
+      <h4 id="quote-list-header">All of your quotes:</h4>
+      <div id="total-quotes"></div>
+    </div>
+    
+    <ul id="quote-list" class="collection">
+<!--       <li class="list-quote-text">Quote 1 <div style="display:inline"><a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a></div></li> -->
+
+    </ul>
+  </div>
+
+  <script src="script.js"></script>
+
+ <!--
+  This script places a badge on your repl's full-browser view back to your repl's cover
+  page. Try various colors for the theme: dark, light, red, orange, yellow, lime, green,
+  teal, blue, blurple, magenta, pink!
+  -->
+  <script src="https://replit.com/public/js/replit-badge.js" theme="blue" defer></script> 
+</body>
+
+</html>
