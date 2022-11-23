@@ -117,3 +117,12 @@ i.edit-item{
   font-weight: bold;
   font-size: 1.2rem;
 }
+
+@media (max-width:500px){
+  .header-section h1{
+    font-size: 3rem;
+  }
+  .header-section button{
+    margin-top: .5rem;
+  }
+}

@@ -132,7 +132,7 @@ const DataCtrl = (function(){
       })
       return found;
     },
-    deleteQuote:function(id){
+    deleteCurrentQuote:function(id){
       // Create a new array of ids based on the original data
       const quoteIds = data.quotes.map(function(quote){
         return quote.id
@@ -242,7 +242,7 @@ const UICtrl = (function(){
     }
 
     },
-    addListItem:function(quote){
+    addListItem:function(quote,sortValue){
       // Make new Date variable for stored creation date
         const localeDate = new Date(quote.createdDate)
       
@@ -253,8 +253,8 @@ const UICtrl = (function(){
       // Add the innerHTML to the div
       div.innerHTML = `<li class="list-quote-text" id="item-${quote.id}"><span><em>${quote.text}</em> - by: <strong>${quote.author}</strong></span> <a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a></li><span class="date">Added: ${localeDate.toLocaleString()}</span>`
 
-      // Add to the list container
-      document.querySelector(UISelectors.quoteList).insertAdjacentElement('beforeend',div)
+      // Add to the list container - depending on sort value
+      document.querySelector(UISelectors.quoteList).insertAdjacentElement(`${sortValue}`,div)
       
       // Create a List Item element inside of the UL
       /*
@@ -354,6 +354,14 @@ const UICtrl = (function(){
       } else {
         console.error(`${toggle} is not a valid toggle state for the Clear All button`)
       }
+    },
+    getSortValue:function(){
+      const sortBy = document.querySelector(UISelectors.sortField).value;
+      if(sortBy == "descending"){
+        return 'afterbegin'
+      } else if(sortBy == "ascending"){
+        return 'beforeend'
+      }
     }
   }
 })()
@@ -399,8 +407,10 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
       UICtrl.toggleClearBtnState("false")
       // Add the quote to the Data Controller
       const newQuote = DataCtrl.addQuote(input.quote,input.author)
+      // Get Sort Direction
+      const sortValue = UICtrl.getSortValue()
       // Add quote to the UI
-      UICtrl.addListItem(newQuote)
+      UICtrl.addListItem(newQuote, sortValue)
       // Add quote to local Storage
       StorageCtrl.storeItem(newQuote)
       // Show total quotes on screen
@@ -510,7 +520,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     let currentQuote = DataCtrl.getCurrentQuote()
     
     // Delete from the Data Structure
-    DataCtrl.deleteQuote(currentQuote.id)
+    DataCtrl.deleteCurrentQuote(currentQuote.id)
 
     // Delete from Storage
     StorageCtrl.deleteStorageItem(currentQuote.id)
@@ -590,7 +600,9 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     const allQuotes = StorageCtrl.getStorageItems();
     // Map the quotes
     const tempQuotesArray = allQuotes.map(q =>({
-      name: q.text, createdDate:new Date(q.createdDate).toLocaleString()
+      id:q.id,
+      name: q.text,
+      createdDate:new Date(q.createdDate).toLocaleString()
     }))
     tempQuotesArray.sort(compareDates)
     function compareDates(a, b) {
