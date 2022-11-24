@@ -340,7 +340,7 @@ const UICtrl = (function(){
     },
     updateTotalQuotesUI:function(){
       const totalQuotes = DataCtrl.getQuoteTotalAmount();
-      document.getElementById('total-quotes').innerHTML = `Total Quotes: ${totalQuotes}`
+      document.getElementById('total-quotes').innerHTML = `${totalQuotes}`
     },
     hideList: function(){
       document.querySelector(UISelectors.quoteInfoContainer).style.display = 'none';
@@ -494,6 +494,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     if(e.target.classList.contains('edit-item')){
       // Get the ID of the quote
       const quoteID = e.target.parentNode.parentNode.id;
+      console.log(quoteID)
       const splitArray = quoteID.split('-');
       // get the ID from the array
       const id = parseInt(splitArray[1]);
@@ -551,8 +552,6 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     } else {
       console.error("UPDATE Function - missing info?")
     }
-
-    
     e.preventDefault()
   }
 
