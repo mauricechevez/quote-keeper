@@ -55,6 +55,18 @@ const StorageCtrl = (function(){
         quotes = JSON.parse(localStorage.getItem("quotes"));
       }
       return quotes;
+    },
+    storeSortValue:function(value){
+      localStorage.setItem("sortValue",value)
+    },
+    getSortValueLS: function(){
+      let storedSortValue;
+      if(localStorage.getItem("sortValue")=== null){
+        storedSortValue = "descending"
+      } else {
+        storedSortValue = localStorage.getItem("sortValue")
+      }
+      return storedSortValue;
     }
   }
 })()
@@ -75,6 +87,8 @@ const DataCtrl = (function(){
     currentQuote:null,
     submitState:true
     }
+
+  const sortValue = StorageCtrl.getSortValueLS();
   
   // 🗝️ PRIVATE Functions 🗝️
   const getDate = function(){
@@ -84,6 +98,12 @@ const DataCtrl = (function(){
 
   // 👨‍💻 PUBLIC Methods 👨‍💻
   return {
+    getSortValue: function(){
+      return sortValue;
+    },
+    getAllQuotes:function(){
+      return data.quotes;
+    },
     addQuote: function(quote,author){
       let ID;
       if(data.quotes.length > 0){
@@ -218,9 +238,9 @@ const UICtrl = (function(){
         author: document.querySelector(UISelectors.authorName).value.trim()
       }
     },
-    populateListItemsWithQuotes:function(quotes){
-      const sortValue = document.querySelector(UISelectors.sortField).value;
-      console.log(`sort value is ${sortValue}`)
+    populateListItemsWithQuotes:function(quotes,sortValue){
+      // const sortValue = document.querySelector(UISelectors.sortField).value;
+      // console.log(`sort value is ${sortValue}`)
       let html = "";
       // Sort based on sort value
       if (sortValue == "descending"){
@@ -238,7 +258,6 @@ const UICtrl = (function(){
       })
       } else {
         quotes.forEach(quote =>{
-          console.log('Using ASCENDING order')
           // Make new Date variable for stored creation date
           const localeDate = new Date(quote.createdDate)
           html += `<div class="quote-wrapper"><li class="list-quote-text" id="item-${quote.id}"><span><em>${quote.text}</em> - by: <strong>${quote.author}</strong></span> <a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a></li><span class="date">Added: ${localeDate.toLocaleString()}</span></div>`
@@ -361,13 +380,33 @@ const UICtrl = (function(){
         console.error(`${toggle} is not a valid toggle state for the Clear All button`)
       }
     },
-    getSortValue:function(){
+    getSortValueUI:function(){
       const sortBy = document.querySelector(UISelectors.sortField).value;
       if(sortBy == "descending"){
         return 'afterbegin'
       } else if(sortBy == "ascending"){
         return 'beforeend'
       }
+    },
+    setSortValueUI:function(value){
+      const sortByField = document.querySelector(UISelectors.sortField)
+      const children = Array.from(sortByField.children)
+      children.forEach(child =>{
+        child.removeAttribute("selected")
+        if(child.value == value){
+          child.setAttribute("selected","")
+        }
+      })
+    },
+    resetSortValueUI:function(){
+      const sortByField = document.querySelector(UISelectors.sortField)
+      const children = Array.from(sortByField)
+      // remove any selected value
+      children.forEach(child =>{
+        child.removeAttribute("selected")
+      })
+      // Set default to descending
+      children[0].setAttribute("selected","")
     }
   }
 })()
@@ -390,7 +429,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     document.addEventListener('keypress', function(e){
       const submitStateValue = DataCtrl.getSubmitStatevalue()
       if(submitStateValue === false){
-        // NESTED IF
+        // 🪺 NESTED IF 🪺
         if(e.keyCode == 13 || e.which === 13){
         e.preventDefault();
         return false;
@@ -414,7 +453,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
       // Add the quote to the Data Controller
       const newQuote = DataCtrl.addQuote(input.quote,input.author)
       // Get Sort Direction
-      const sortValue = UICtrl.getSortValue()
+      const sortValue = UICtrl.getSortValueUI()
       // Add quote to the UI
       UICtrl.addListItem(newQuote, sortValue)
       // Add quote to local Storage
@@ -594,6 +633,9 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
 
       // Remove any error messages
       UICtrl.removeFieldErrorMsg()
+
+      // Reset Sort By Value
+      UICtrl.resetSortValueUI()
   
       // Back to Submit state
       UICtrl.clearEditState();
@@ -603,8 +645,11 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
   }
   /* 👇  Sort Quote List 👇 */
   const sortQuoteList = function(e){
-    const allQuotes = StorageCtrl.getStorageItems();
-    UICtrl.populateListItemsWithQuotes(allQuotes)    
+    const sortByValue = e.target.value;
+    // Write the sort value to LS
+    StorageCtrl.storeSortValue(sortByValue);
+    const allQuotes = DataCtrl.getAllQuotes();
+    UICtrl.populateListItemsWithQuotes(allQuotes, sortByValue);
   }
 
   // 👨‍💻 PUBLIC Methods 👨‍💻
@@ -612,8 +657,13 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     init: function(){
       // Hide buttons in UI
       UICtrl.clearEditState();
-      // Get all stored quotes, display on screen/UI
-      const allStoredQuotes = StorageCtrl.getStorageItems();
+
+      // Get Sort By Value from LS
+      const sortValue = DataCtrl.getSortValue();
+      // Set Sort Value on the UI on LOAD only
+      UICtrl.setSortValueUI(sortValue)
+      // Get all quotes, display on screen/UI
+      const allStoredQuotes = DataCtrl.getAllQuotes();
       if(allStoredQuotes.length === 0){
         // Disable the Clear button
         UICtrl.toggleClearBtnState("true");
@@ -621,7 +671,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
       } else {
         // Display total number of quotes
         UICtrl.updateTotalQuotesUI()
-        UICtrl.populateListItemsWithQuotes(allStoredQuotes)
+        UICtrl.populateListItemsWithQuotes(allStoredQuotes,sortValue)
         UICtrl.toggleClearBtnState("false");
       }
        
