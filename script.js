@@ -196,6 +196,15 @@ const UICtrl = (function(){
     fieldWrapper: '.field-wrapper',
     sortField: '#sort-field'
   }
+  function compareDates(a, b) {
+    if (b.createdDate < a.createdDate) {
+      return -1;
+    }
+    if (b.createdDate > a.createdDate) {
+      return 1;
+    }
+    return 0;
+  }
 
   // 👨‍💻 PUBLIC Functions 👨‍💻
   return {
@@ -210,36 +219,33 @@ const UICtrl = (function(){
       }
     },
     populateListItemsWithQuotes:function(quotes){
+      const sortValue = document.querySelector(UISelectors.sortField).value;
+      console.log(`sort value is ${sortValue}`)
       let html = "";
-      quotes.forEach(quote =>{
+      // Sort based on sort value
+      if (sortValue == "descending"){
+        // Make new array for sorting
+        const quotesDesc = quotes.map(q =>(
+          {text: q.text, author: q.author, createdDate: new Date(q.createdDate).toLocaleString()}
+        ))
+        // Sort them in Descending order
+          quotesDesc.sort(compareDates);
+        // Run a forEach on each quote
+        quotesDesc.forEach(quote =>{
         // Make new Date variable for stored creation date
-        const localeDate = new Date(quote.createdDate)
-        html += `<div class="quote-wrapper"><li class="list-quote-text" id="item-${quote.id}"><span><em>${quote.text}</em> - by: <strong>${quote.author}</strong></span> <a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a></li><span class="date">Added: ${localeDate.toLocaleString()}</span></div>      
-        `
+          const localeDate = new Date(quote.createdDate)
+          html += `<div class="quote-wrapper"><li class="list-quote-text" id="item-${quote.id}"><span><em>${quote.text}</em> - by: <strong>${quote.author}</strong></span> <a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a></li><span class="date">Added: ${localeDate.toLocaleString()}</span></div>`
       })
-      // Insert the new list items into the UL
+      } else {
+        quotes.forEach(quote =>{
+          console.log('Using ASCENDING order')
+          // Make new Date variable for stored creation date
+          const localeDate = new Date(quote.createdDate)
+          html += `<div class="quote-wrapper"><li class="list-quote-text" id="item-${quote.id}"><span><em>${quote.text}</em> - by: <strong>${quote.author}</strong></span> <a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a></li><span class="date">Added: ${localeDate.toLocaleString()}</span></div>`
+        })
+      }
+      // // Insert the new list items into the UL
       document.querySelector(UISelectors.quoteList).innerHTML = html;
-
-      /* TESTING PURPOSES */
-      console.log(quotes)
-      console.log('Sorting by Date - Descending')
-      const quotesDesc = quotes.map(q =>(
-        {text: q.text, createdDate: new Date(q.createdDate).toLocaleString()}
-      ))
-      console.log(`=-=-=-=-=-=-=-=-=-=-=-=-`)
-      console.log(quotesDesc)
-      console.log(`=-=-=-=-=-=-=-=-=-=-=-=-`)
-      quotesDesc.sort(compareDates)
-      
-      function compareDates(a, b) {
-      if (b.createdDate < a.createdDate) {
-        return -1;
-      }
-      if (b.createdDate > a.createdDate) {
-        return 1;
-      }
-      return 0;
-    }
 
     },
     addListItem:function(quote,sortValue){
@@ -598,23 +604,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
   /* 👇  Sort Quote List 👇 */
   const sortQuoteList = function(e){
     const allQuotes = StorageCtrl.getStorageItems();
-    // Map the quotes
-    const tempQuotesArray = allQuotes.map(q =>({
-      id:q.id,
-      name: q.text,
-      createdDate:new Date(q.createdDate).toLocaleString()
-    }))
-    tempQuotesArray.sort(compareDates)
-    function compareDates(a, b) {
-      if (b.createdDate < a.createdDate) {
-        return -1;
-      }
-      if (b.createdDate > a.createdDate) {
-        return 1;
-      }
-      return 0;
-    }
-    console.log(tempQuotesArray) ;
+    UICtrl.populateListItemsWithQuotes(allQuotes)    
   }
 
   // 👨‍💻 PUBLIC Methods 👨‍💻
@@ -622,7 +612,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
     init: function(){
       // Hide buttons in UI
       UICtrl.clearEditState();
-
+      // Get all stored quotes, display on screen/UI
       const allStoredQuotes = StorageCtrl.getStorageItems();
       if(allStoredQuotes.length === 0){
         // Disable the Clear button
@@ -634,8 +624,7 @@ const AppCtrl = (function(StorageCtrl,DataCtrl,UICtrl){
         UICtrl.populateListItemsWithQuotes(allStoredQuotes)
         UICtrl.toggleClearBtnState("false");
       }
-    
-      
+       
       // Load Event Listeners
       loadEventListener();
     }
