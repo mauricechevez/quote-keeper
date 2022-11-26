@@ -58,3 +58,11 @@ When edit button is clicked,
 * Provide user ability to change the sort order DONE ✅
 
 15. Move the sort field down to the list, change the header for the list to include the total quotes.
+
+🚨 NEED TO FIX sorting issue - when sorted using DESCENDING, the Edit functionality no longer works 🚨
+item-undefined
+script.js:311 Uncaught TypeError: Cannot read properties of null (reading 'text')
+    at Object.addQuoteToForm (script.js:311:75)
+    at HTMLUListElement.quoteEditClick (script.js:507:14)
+
+When in edit mode, I should also remove the ability to sort (Display NONE)🚧🦺
