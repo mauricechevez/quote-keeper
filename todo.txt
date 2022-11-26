@@ -40,6 +40,7 @@ When edit button is clicked,
 
 11. If no quotes available, provide ability to fill up the list with a sample listing.
 * JSON File? Try with an object first 🚧 🦺
+* Use built in array with random quotes. DONE ✅
 
 12. Add the DATE of quote submission to the form.
 * Perform the same steps as when adding the Author name, except you need to get the date automatically using the Date object. DONE ✅
@@ -59,10 +60,11 @@ When edit button is clicked,
 
 15. Move the sort field down to the list, change the header for the list to include the total quotes.
 
-🚨 NEED TO FIX sorting issue - when sorted using DESCENDING, the Edit functionality no longer works 🚨
+✅ NEED TO FIX sorting issue - when sorted using DESCENDING, the Edit functionality no longer works ✅
 item-undefined
 script.js:311 Uncaught TypeError: Cannot read properties of null (reading 'text')
     at Object.addQuoteToForm (script.js:311:75)
     at HTMLUListElement.quoteEditClick (script.js:507:14)
+* FIXED - I wasn't sending the item-ID number to the newly build array. ✅
 
 When in edit mode, I should also remove the ability to sort (Display NONE)🚧🦺

@@ -405,7 +405,7 @@ const UICtrl = (function() {
 /* ⚡⚡⚡ App Controller ⚡⚡⚡ */
 const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
   // Get list of all selectors
-  const uiSelectors = UICtrl.getSelectors()
+  const uiSelectors = UICtrl.getSelectors();
 
   // Sample Quotes
   const sampleQuotes = [
