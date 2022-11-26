@@ -19,6 +19,20 @@ html, body {
   margin-bottom:1.5rem;
 }
 
+#sample-quotes-link-container{
+  text-align: center;
+}
+
+#sample-quotes-link-container a{
+  text-decoration: none;
+}
+
+#sample-quotes-link-container a:hover{
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color:#0f82ce;
+}
+
 /* TEXT Input fields */
 input.input-field{
   margin-bottom: 2px;
@@ -27,6 +41,7 @@ input.input-field{
 input#quote:focus,input#author:focus{
   background-color: aliceblue;
 }
+
 
 /* BUTTONS */
 
@@ -82,8 +97,17 @@ input#back-btn:hover{
   max-width: 650px !important;
 }
 
-.quote-wrapper{
+#quote-list .quote-wrapper{
   margin-bottom: 1.3em;
+  padding:3px 3px 3px 10px;
+  border-left: 3px solid transparent;
+  background-color: transparent;
+}
+
+#quote-list .quote-wrapper:hover{
+  transition: border-left .05s ease-in-out,background-color .05s ease-in-out;
+  border-left: 3px solid #0f82ce;
+  background-color: aliceblue;
 }
 
 #quote-info-container{
@@ -116,6 +140,7 @@ input#back-btn:hover{
 #quote-info-container .sort-field{
   margin:0 0 0 10px;
 }
+
 
 .date{
   font-size: .8em;

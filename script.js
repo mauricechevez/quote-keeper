@@ -214,7 +214,8 @@ const UICtrl = (function() {
     clearBtn: '#clear-btn',
     editStateBtns: '.edit-state-btns',
     fieldWrapper: '.field-wrapper',
-    sortField: '#sort-field'
+    sortField: '#sort-field',
+    sampleQuotesLinkContainer: '#sample-quotes-link-container'
   }
   function compareDates(a, b) {
     if (b.createdDate < a.createdDate) {
@@ -240,13 +241,12 @@ const UICtrl = (function() {
     },
     populateListItemsWithQuotes: function(quotes, sortValue) {
       // const sortValue = document.querySelector(UISelectors.sortField).value;
-      // console.log(`sort value is ${sortValue}`)
       let html = "";
       // Sort based on sort value
       if (sortValue == "descending") {
         // Make new array for sorting
         const quotesDesc = quotes.map(q => (
-          {id:q.id, text: q.text, author: q.author, createdDate: new Date(q.createdDate).toLocaleString() }
+          { id: q.id, text: q.text, author: q.author, createdDate: new Date(q.createdDate).toLocaleString() }
         ))
         // Sort them in Descending order
         quotesDesc.sort(compareDates);
@@ -266,7 +266,6 @@ const UICtrl = (function() {
       }
       // // Insert the new list items into the UL
       document.querySelector(UISelectors.quoteList).innerHTML = html;
-
     },
     addListItem: function(quote, sortValue) {
       // Make new Date variable for stored creation date
@@ -408,6 +407,30 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
   // Get list of all selectors
   const uiSelectors = UICtrl.getSelectors()
 
+  // Sample Quotes
+  const sampleQuotes = [
+    {
+      quote: "Life is what happens when you're busy making other plans",
+      author: "John Lennon"
+    },
+    {
+      quote: "Tell me and I forget. Teach me and I remember. Involve me and I learn.",
+      author: "Benjamin Franklin"
+    },
+    {
+      quote:"If you look at what you have in life, you'll always have more. If you look at what you don't have in life, you'll never have enough",
+      author:"Oprah Winfrey"
+    },
+    {
+      quote:"The way to get started is to quit talking and begin doing",
+      author:"Walt Disney"
+    },
+    {
+     quote:"The future belongs to those who believe in the beauty of their dreams",
+      author:"Eleanor Roosevelt"
+    }
+  ]
+
   // 👂 Event Listeners 👂
   const loadEventListener = function() {
     document.querySelector(uiSelectors.addQuote).addEventListener('click', quoteAddSubmit)
@@ -417,6 +440,8 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
     document.querySelector(uiSelectors.deleteBtn).addEventListener('click', quoteDeleteSubmit)
     document.querySelector(uiSelectors.clearBtn).addEventListener('click', clearAllQuotes)
     document.querySelector(uiSelectors.sortField).addEventListener('change', sortQuoteList)
+    document.querySelector(uiSelectors.sampleQuotesLinkContainer).addEventListener('click',addSampleQuote)
+    // document.querySelector(uiSelectors.sampleQuotesLinkContainer).add
     /* ⌨️ PREVENT Enter Key from being used to submit the form ⌨️ */
     document.addEventListener('keypress', function(e) {
       const submitStateValue = DataCtrl.getSubmitStatevalue()
@@ -434,7 +459,6 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
 
   // 👇 Add -- Submit quote 👇
   const quoteAddSubmit = function(e) {
-
     const input = UICtrl.getQuoteInput();
     // Check for a quote information
     if (input.quote != "" && input.author != "") {
@@ -456,6 +480,8 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
       UICtrl.clearInput()
       // Check for error messages
       UICtrl.removeFieldErrorMsg()
+      // Hide random quote link generator
+    document.querySelector(uiSelectors.sampleQuotesLinkContainer).style.display = 'none';
     } else if (input.quote == "" && input.author == "") {
       // Check for error messages and get rid of them first
       UICtrl.removeFieldErrorMsg()
@@ -486,7 +512,7 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
     if (e.target.classList.contains('edit-item')) {
       // Get the ID of the quote
       const quoteID = e.target.parentNode.parentNode.id;
-      
+
       console.log(quoteID)
       const splitArray = quoteID.split('-');
       // get the ID from the array
@@ -511,7 +537,6 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
   const quoteEditSubmit = function(e) {
     // const textInput = document.querySelector(uiSelectors.quoteInput);
     // const authorInput = document.querySelector(uiSelectors.authorName);
-
     const input = UICtrl.getQuoteInput();
 
     if (input.quote != "" && input.author != "") {
@@ -580,6 +605,8 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
       UICtrl.hideList()
       // Disable the Clear All Button
       UICtrl.toggleClearBtnState("true");
+      // Show random quote link generator
+    document.querySelector(uiSelectors.sampleQuotesLinkContainer).style.display = 'block';
     }
     e.preventDefault()
   }
@@ -632,6 +659,9 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
       // Back to Submit state
       UICtrl.clearEditState();
 
+      // Show random quote link generator
+    document.querySelector(uiSelectors.sampleQuotesLinkContainer).style.display = 'block';
+
     }
     e.preventDefault();
   }
@@ -641,7 +671,36 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
     // Write the sort value to LS
     StorageCtrl.storeSortValue(sortByValue);
     const allQuotes = DataCtrl.getAllQuotes();
+    console.log(allQuotes)
     UICtrl.populateListItemsWithQuotes(allQuotes, sortByValue);
+  }
+
+  // 👇 Add -- SAMPLE quotes 👇
+  const addSampleQuote = function(e) {
+    // Show the list
+    UICtrl.showList()
+    // Toggle Clear Button state
+    UICtrl.toggleClearBtnState("false")
+    // Pick random quote from SampleQuotes array
+      const randomNum = Math.floor(Math.random() * 5);
+      const sampleQuote = sampleQuotes[randomNum];    
+    
+    // Add quote to the DataCtrl
+        const newQuote = DataCtrl.addQuote(sampleQuote.quote, sampleQuote.author)
+        // Add quote to the UI
+        UICtrl.addListItem(newQuote, "afterbegin")
+        // Add quote to local Storage
+        StorageCtrl.storeItem(newQuote)
+
+    // Show total quotes on screen
+    UICtrl.updateTotalQuotesUI()
+    // Clear the input
+    UICtrl.clearInput()
+    // Check for error messages
+    UICtrl.removeFieldErrorMsg()
+    // Hide random quote link generator
+    document.querySelector(uiSelectors.sampleQuotesLinkContainer).style.display = 'none';
+    e.preventDefault;
   }
 
   // 👨‍💻 PUBLIC Methods 👨‍💻
@@ -665,10 +724,15 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
         UICtrl.updateTotalQuotesUI()
         UICtrl.populateListItemsWithQuotes(allStoredQuotes, sortValue)
         UICtrl.toggleClearBtnState("false");
+        // Hide random quote link generator
+      document.querySelector(uiSelectors.sampleQuotesLinkContainer).style.display = 'none';
       }
 
       // Load Event Listeners
       loadEventListener();
+    },
+    runSampleQuotes: function() {
+      return addSampleQuote();
     }
   }
 })(StorageCtrl, DataCtrl, UICtrl)
