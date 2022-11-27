@@ -1,0 +1,24 @@
+{
+  "sampleQuotes":[
+    {
+      "quote": "Life is what happens when you're busy making other plans",
+      "author": "John Lennon"
+    },
+    {
+      "quote": "Tell me and I forget. Teach me and I remember. Involve me and I learn.",
+      "author": "Benjamin Franklin"
+    },
+    {
+      "quote":"If you look at what you have in life, you'll always have more. If you look at what you don't have in life, you'll never have enough",
+      "author":"Oprah Winfrey"
+    },
+    {
+      "quote":"The way to get started is to quit talking and begin doing",
+      "author":"Walt Disney"
+    },
+    {
+     "quote":"The future belongs to those who believe in the beauty of their dreams",
+      "author":"Eleanor Roosevelt"
+    }
+  ]
+}
