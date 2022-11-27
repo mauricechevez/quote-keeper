@@ -188,6 +188,18 @@ const DataCtrl = (function() {
       const today = new Date()
       return today;
     },
+    getSampleQuote:async function(url){
+      const resp = await fetch(
+        url,
+        {method: 'GET'}
+      );
+      if(!resp.ok){
+        throw new Error(`Error! status: ${resp.status}`)
+      }
+      const data = await resp.json();
+      // console.log(data)
+      return data;
+    },
     logData: function() {
       return data
     }
@@ -677,30 +689,35 @@ const AppCtrl = (function(StorageCtrl, DataCtrl, UICtrl) {
 
   // 👇 Add -- SAMPLE quotes 👇
   const addSampleQuote = function(e) {
-    // Show the list
+    DataCtrl.getSampleQuote('./sample-quotes.json')
+    .then(data => data.sampleQuotes)
+      // Send objects down
+    .then(newData => {
+      // Show the list
     UICtrl.showList()
-    // Toggle Clear Button state
+      // Toggle Clear Button state
     UICtrl.toggleClearBtnState("false")
-    // Pick random quote from SampleQuotes array
-      const randomNum = Math.floor(Math.random() * 5);
-      const sampleQuote = sampleQuotes[randomNum];    
-    
-    // Add quote to the DataCtrl
-        const newQuote = DataCtrl.addQuote(sampleQuote.quote, sampleQuote.author)
-        // Add quote to the UI
-        UICtrl.addListItem(newQuote, "afterbegin")
-        // Add quote to local Storage
-        StorageCtrl.storeItem(newQuote)
+      // Pick random quote from SampleQuotes array
+      const randomNum = Math.floor(Math.random() * 10);
+      const sampleQuote = newData[randomNum];    
+      // Add quote to the DataCtrl
+      const newQuote = DataCtrl.addQuote(sampleQuote.quote, sampleQuote.author)
+      // Add quote to the UI
+      UICtrl.addListItem(newQuote, "afterbegin")
+      // Add quote to local Storage
+      StorageCtrl.storeItem(newQuote)
+          // Show total quotes on screen
+      UICtrl.updateTotalQuotesUI()
+      // Clear the input
+      UICtrl.clearInput()
+      // Check for error messages
+      UICtrl.removeFieldErrorMsg()
+      // Hide random quote link generator
+      document.querySelector(uiSelectors.sampleQuotesLinkContainer).style.display = 'none';
+      e.preventDefault;
+    }
+  );
 
-    // Show total quotes on screen
-    UICtrl.updateTotalQuotesUI()
-    // Clear the input
-    UICtrl.clearInput()
-    // Check for error messages
-    UICtrl.removeFieldErrorMsg()
-    // Hide random quote link generator
-    document.querySelector(uiSelectors.sampleQuotesLinkContainer).style.display = 'none';
-    e.preventDefault;
   }
 
   // 👨‍💻 PUBLIC Methods 👨‍💻
